@@ -16,29 +16,30 @@ public class CloudClassification {
      * @param args <data file name> <output file name>.
      */
      public static void main(String[] args) {
-         File file         = new File(args[0]);
+         File fileTest     = new File("FirstTest.txt");
+         File fileOutput   = new File("largesample_output.txt");
          int lineNumber    = 0;
          int numTimeSteps  = 0;
          int airLayerXSize = 0;
          int airLayerYSize = 0;
 
          try{
-         Scanner inputStream = new Scanner(file);
-             while(inputStream.hasNext()){
-               String line = inputStream.nextLine();
-               System.out.println(line);
-               if (lineNumber == 0){
-                 String[] values = line.split(" ");
-                 numTimeSteps  = Integer.valueOf(values[0]);
-                 airLayerXSize = Integer.valueOf(values[1]);
-                 airLayerYSize = Integer.valueOf(values[2]);
-                 break;
-               }
+         Scanner inputStreamTest = new Scanner(fileTest);
+         Scanner inputStreamOutput = new Scanner(fileOutput);
+             while(inputStreamTest.hasNext()){
+               String lineTest = inputStreamTest.nextLine();
+               String lineOutput = inputStreamOutput.nextLine();
 
-               String[] values    = line.split(" ");
-               String[] newValues = new String[3];
+               if (!(lineTest.equals(lineOutput))){
+                 if (lineNumber!=1){
+                   System.out.println("Error! Line, " + lineNumber);
+                   break;
+                 }
+               }
+               lineNumber++;
              }
-             inputStream.close();
+             inputStreamTest.close();
+             inputStreamOutput.close();
          }
          catch (FileNotFoundException e) {
              e.printStackTrace();
