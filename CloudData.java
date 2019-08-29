@@ -20,14 +20,16 @@ public class CloudData {
 		String filename = "largesample_input.txt";
 		readData(filename);
 		System.gc();																		// disabling garbage collection
-		long now = System.currentTimeMillis(); 					// time before execution
-		classifyAll();																	// classification of all cells
-		long after = System.currentTimeMillis();  			// time after exectution
-		long difference = after - now;
-		System.out.println("Program took " +
-												difference +
-												" milliseconds");
-		writeData("FirstTest.txt");
+		for (int i = 0;i<11;i++){
+			long now = System.currentTimeMillis(); 					// time before execution
+			classifyAll();																	// classification of all cells
+			long after = System.currentTimeMillis();  			// time after exectution
+			long difference = after - now;
+			System.out.println("Run: " + i + " Program took " +
+													difference +
+													" milliseconds");
+		}
+		// writeData("FirstTest.txt");
 	}
 
 	public static void classifyAll(){
