@@ -16,26 +16,32 @@ public class CloudDataThreaded {
 	static Integer [][][] classification; 			 // cloud type per grid point, evolving over time
 	static int dimx, dimy, dimt;   					 // data dimensions
 	static float aveX,aveY;
+	static int[] numThreads;
 	static final ForkJoinPool fjPool = new ForkJoinPool();
 	// static int [] thresholds = {0,100,200,300,400,500,600,700,800,900,1000};
 
 // NEED THIS!!
 	static int [] thresholds = {400,800,1200,1600,2000,2400,2800,3200,3600,4000};
 
-
 	static long results [];
+	static int[] resultsNumThreads;
 
 
 	public static void main(String [] args){
-		String filename = "CreatedFile_20000000_UNIX.txt";
+		String filename = "CreatedFile_200000_Windows.txt";
 		readData(filename);
 		System.gc();																		// disabling garbage collection
 		results = new long[15];
+		resultsNumThreads = new int[15];
+		numThreads = new int[1];
+
+
 		// int threshold = 400;
 
 		// NEED THIS!
 		for (int threshold : thresholds){
 			for (int i = 0;i<15;i++){
+				numThreads[0] = 0;
 				Float[] prevWind = new Float[2];
 				long now = System.currentTimeMillis(); 				// time before execution
 
@@ -51,8 +57,10 @@ public class CloudDataThreaded {
 														difference +
 														" milliseconds");
 				results[i] = difference;
+				resultsNumThreads[i] = numThreads[0];
 			}
-			writeTestData("Threaded_"+threshold + "_Huge_UNIX.txt",results);
+			writeTestData("Threaded_"+threshold + "_Large_Windows.txt",results);
+			writeNumThreadsData("Threaded_"+threshold + "_Large_NumThreads_Windows.txt",resultsNumThreads);
 		}
 
 		// writeData("FirstTest.txt");
@@ -60,7 +68,7 @@ public class CloudDataThreaded {
 
 
 	static Float[] classifyThreaded(int threshold){
-		return fjPool.invoke(new SumLocal(dimx,dimy,advection,convection,classification,0,dim(),threshold));
+		return fjPool.invoke(new SumLocal(dimx,dimy,advection,convection,classification,0,dim(),threshold,numThreads));
 	}
 
 	// static Float[] prevailingThreaded(){
@@ -196,6 +204,22 @@ public class CloudDataThreaded {
 	}
 
 	public static void writeTestData(String fileName, long [] results){
+		 try{
+			 FileWriter fileWriter = new FileWriter(fileName);
+			 PrintWriter printWriter = new PrintWriter(fileWriter);
+			 for (long result : results){
+				 printWriter.printf("%d\n", result);
+			 }
+
+			 printWriter.close();
+		 }
+		 catch (IOException e){
+			 System.out.println("Unable to open output file "+fileName);
+				e.printStackTrace();
+		 }
+	}
+
+	public static void writeNumThreadsData(String fileName, int [] results){
 		 try{
 			 FileWriter fileWriter = new FileWriter(fileName);
 			 PrintWriter printWriter = new PrintWriter(fileWriter);
