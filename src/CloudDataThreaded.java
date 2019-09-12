@@ -25,10 +25,12 @@ public class CloudDataThreaded {
 	static long results [];																		// runtimes
 	static int[] resultsNumThreads;														// storing the number of threads used for each run
 
-
+  /** Main method for reading in dataset, performing the necessary operations and writing out the results.
+  * @param args args[0] is the filename to read in, args[1] is the filename to write to.
+  */
 	public static void main(String [] args){
-		readData(args[0]);																					// reading in data file
-		System.gc();																								// disabling garbage collection
+		readData(args[0]);																				// reading in data file
+		System.gc();																							// disabling garbage collection
 		results = new long[15];
 		resultsNumThreads = new int[15];
 		numThreads = new int[1];
@@ -48,7 +50,7 @@ public class CloudDataThreaded {
 				aveX = prevWind[0]/dim();
 				aveY = prevWind[1]/dim();
 
-				long after = System.currentTimeMillis();  							// time after exectution
+				long after = System.currentTimeMillis();  							// time after execution
 				long difference = after - now;													// runtime
 				System.out.println("Run: " + i + " Program took " +
 														difference +
@@ -56,26 +58,32 @@ public class CloudDataThreaded {
 				results[i] = difference;
 				resultsNumThreads[i] = numThreads[0];
 			}
-			// writeTestData("Threaded_"+threshold + "_Large_Windows.txt",results);              										// writing test runtimes to file
-			// writeNumThreadsData("Threaded_"+threshold + "_Large_NumThreads_Windows.txt",resultsNumThreads);			// writing test threads used to file
 		}
 
 		writeData(args[1]);																					// writing to output file
 	}
 
-	// method to calculate the prevailing wing and cloud classifcation in parallel
+	/** Method to calculate the prevailing wind and cloud classifcation in parallel.
+	* @param threshold the sequential cutoff being tested.
+	* @return A float array containing the sum of all the x and y components.
+	*/
 	static Float[] classifyThreaded(int threshold){
 		return fjPool.invoke(new SumLocal(dimx,dimy,advection,convection,classification,0,dim(),threshold,numThreads));
 	}
 
 
-	// overall number of elements in the timeline grids
+
+	/** Method to calculate overall number of elements in the timeline grids.
+	* @return the number of elements.
+	*/
 	static int dim(){
 		return dimt*dimx*dimy;
 	}
 
 
-	// read cloud simulation data from file
+	/** Method to read cloud simulation data from file.
+	* @param fileName the filename to read in.
+	*/
 	static void readData(String fileName){
 		float sumX=0;
 		float sumY=0;
@@ -113,7 +121,9 @@ public class CloudDataThreaded {
 	}
 
 
-	// write classification output to file
+	/** Method to write classification output to file.
+	* @param fileName the filename to write to.
+	*/
 	public static void writeData(String fileName){
 		 try{
 			 FileWriter fileWriter = new FileWriter(fileName);
@@ -139,7 +149,14 @@ public class CloudDataThreaded {
 	}
 
 
-	// write test runtime results to file
+// LAST TWO METHODS WERE USED IN THE TESTING PROCESS //
+// we decided to keep them for illustrative purposes //
+
+
+	/** Method to write test runtime results to file.
+	* @param fileName the filename to write to.
+	* @param results an array containing all the runtime results.
+	*/
 	public static void writeTestData(String fileName, long [] results){
 		 try{
 			 FileWriter fileWriter = new FileWriter(fileName);
@@ -156,7 +173,11 @@ public class CloudDataThreaded {
 		 }
 	}
 
-	// write number of threads for tests to file
+
+	/** Method to write number of threads for tests to file.
+	* @param fileName the filename to write to.
+	* @param results an array containing all the number of threads results.
+	*/
 	public static void writeNumThreadsData(String fileName, int [] results){
 		 try{
 			 FileWriter fileWriter = new FileWriter(fileName);

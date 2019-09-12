@@ -1,5 +1,6 @@
-// Class that extends RecursiveTask
-
+/** SumLocal class to facilitate parallelism.
+ * @author ANDRYA005
+*/
 
 import java.util.concurrent.RecursiveTask;
 import java.util.Vector;
@@ -20,7 +21,17 @@ public class SumLocal extends RecursiveTask<Float[]>  {
 		int[] numThreads;									 // storing the number of threads used
 
 
-		// Constructor
+		/** Constructor.
+		* @param dimx x dimension of the data.
+		* @param dimy y dimension of the data
+		* @param advection 3D array containing all advection values.
+		* @param convection 3D array containing all convection values.
+		* @param classification array containing classifications.
+		* @param low used to compute sequential cutoff.
+		* @param hi used to compute sequential cutoff.
+		* @param threshold sequential cutoff.
+		* @param numThreads array counting the number of threads.
+	  */
 		SumLocal(int dimx,int dimy,Vector<Float>[][][] advection,float [][][] convection,Integer [][][] classification,int low,int hi,int threshold, int[] numThreads){
 			this.dimx = dimx;
 			this.dimy = dimy;
@@ -33,7 +44,11 @@ public class SumLocal extends RecursiveTask<Float[]>  {
 			this.numThreads = numThreads;
 		}
 
-	 // Pararallizes both the cloud classification and prevailing wind calculations
+
+
+	/** Pararallizes both the cloud classification and prevailing wind calculations.
+ 	* @return A Float containing the sum of all x and y values.
+	*/
 	 protected Float[] compute(){
 		 	numThreads[0]++;
 			if((hi-low) < SEQUENTIAL_CUTOFF) {
@@ -53,7 +68,11 @@ public class SumLocal extends RecursiveTask<Float[]>  {
 			}
 	 }
 
-	 // Method to sum the x- and y- components of advection
+
+
+	/** Method to sum the x- and y- components of advection.
+	* @return A Float containing the sum of all x and y values.
+ 	*/
 	 public Float[] prevailingWind(){
 		 Float [] prevailingWindArr = new Float[2];
 		 prevailingWindArr[0] = (float)0;
@@ -70,7 +89,9 @@ public class SumLocal extends RecursiveTask<Float[]>  {
 	 }
 
 
-	 // method to store cloud classifications
+
+	 /** Method to store cloud classifications.
+	 */
 	 public void classifyAll(){
 
 		 for(int cell = low; cell < hi; cell++){
@@ -83,7 +104,10 @@ public class SumLocal extends RecursiveTask<Float[]>  {
 		 }
 	 }
 
-	 // convert linear position into 3D location in simulation grid
+	 /** Method to convert linear position into 3D location in simulation grid.
+	 * @param pos the linear position of the data point.
+	 * @return A Float containing the sum of all x and y values.
+	 */
 	 public int[] locate(int pos)
 	 {
 		 int[] ind = new int[3];
@@ -93,7 +117,11 @@ public class SumLocal extends RecursiveTask<Float[]>  {
 		 return ind;
 	 }
 
-	 // used to classify a cell as 0, 1 or 2.
+	 /** Method to used to classify a cell as 0, 1 or 2.
+	 * @param lift the convection value.
+	 * @param localWindAverage the local wind average at the point.
+	 * @return An Integer representing the classification.
+	 */
 	 public Integer classify(double lift, float[] localWindAverage){
 	 	double lenWind = Math.sqrt(localWindAverage[0]*localWindAverage[0] + localWindAverage[1]*localWindAverage[1]);
 	 	if (Math.abs(lift)>lenWind)
@@ -104,7 +132,10 @@ public class SumLocal extends RecursiveTask<Float[]>  {
 	 		return 2;
 	 }
 
-	 // calculates the local wind average of the observation with the 8 surrounding observations
+	 /** Method to calculate the local wind average of the observation with the 8 surrounding observations
+	 * @param ind 3D location of cell.
+	 * @return An float array containing the average of the x and y components.
+	 */
 	 public float[] localAverage(int[] ind){
 		 float sum[] = new float[2];
 		 int divisor = 0;
