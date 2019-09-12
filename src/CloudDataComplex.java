@@ -8,7 +8,7 @@ import java.io.PrintWriter;
 import java.util.Vector;
 import java.lang.Math;
 
-public class CloudData {
+public class CloudDataComplex {
 
 	static Vector <Float> [][][] advection; 					// in-plane regular grid of wind vectors, that evolve over time
 	static float [][][] convection; 									// vertical air movement strength, that evolves over time
@@ -18,14 +18,15 @@ public class CloudData {
 	static long results [];														// runtimes
 
 	public static void main(String [] args){
-		// String filename = "CreatedFile_200000_Windows.txt";
-		readData(arge[0]);																			// reading in data file
+		String filename = "CreatedFile_20000000_UNIX.txt";
+		readData(filename);																			// reading in data file
 		System.gc();																	  				// disabling garbage collection
 		results = new long[15];
 
 		for (int i = 0;i<15;i++){
 			long now = System.currentTimeMillis(); 								// time before execution
 			prevailingWind();
+			// System.out.println("finished prev wind");
 			classifyAll();																				// classification of all cells
 			long after = System.currentTimeMillis();  						// time after exectution
 			long difference = after - now;
@@ -34,8 +35,8 @@ public class CloudData {
 													" milliseconds");
 			results[i] = difference;
 		}
-		// writeTestData("SequentialResultsLarge_Windows.txt",results);  // method to write test results to text file
-		writeData(args[1]);																							 // writing to output file
+		writeTestData("Sequential_Complex_Huge_Unix.txt",results);               // method to write test results to text file
+		// writeData("ComplexTest.txt");																							 // writing to output file
 	}
 
 	// method to store cloud classifications
@@ -134,7 +135,6 @@ public class CloudData {
 
 	// calculates the local wind average of the observation with the 8 surrounding observations
 	public static float[] localAverage(int[] ind){
-		// ind[1] is x, ind[2] is y
 		float sum[] = new float[2];
 		int divisor = 0;
 
@@ -148,8 +148,8 @@ public class CloudData {
 				}
 				else{
 					divisor+=1;
-					sum[0] += advection[ind[0]][xInd][yInd].get(0);
-					sum[1] += advection[ind[0]][xInd][yInd].get(1);
+					sum[0] += Math.exp(Math.log(Math.exp(Math.log(advection[ind[0]][xInd][yInd].get(0)))));
+					sum[1] += Math.exp(Math.log(Math.exp(Math.log(advection[ind[0]][xInd][yInd].get(1)))));
 				}
 			}
 

@@ -1,11 +1,10 @@
 // Class that extends RecursiveTask
 
 
-import java.util.concurrent.RecursiveTask;
 import java.util.Vector;
 import java.lang.Math;
 
-public class SumLocal extends RecursiveTask<Float[]>  {
+public class SumLocalJavaThread extends extends java.lang.Thread {  {
 	  // int lo; // arguments
 	  // int hi;
 	  // int[] arr;
@@ -21,7 +20,7 @@ public class SumLocal extends RecursiveTask<Float[]>  {
 
 
 		// Constructor
-		SumLocal(int dimx,int dimy,Vector<Float>[][][] advection,float [][][] convection,Integer [][][] classification,int low,int hi,int threshold, int[] numThreads){
+		SumLocalJavaThread(int dimx,int dimy,Vector<Float>[][][] advection,float [][][] convection,Integer [][][] classification,int low,int hi,int threshold, int[] numThreads, float[] prevailingWindArr){
 			this.dimx = dimx;
 			this.dimy = dimy;
 			this.advection = advection;
@@ -31,26 +30,22 @@ public class SumLocal extends RecursiveTask<Float[]>  {
 			this.hi = hi;
 			this.SEQUENTIAL_CUTOFF = threshold;
 			this.numThreads = numThreads;
+      this.prevailingWindArr = prevailingWindArr;
 		}
 
 	 // Pararallizes both the cloud classification and prevailing wind calculations
-	 protected Float[] compute(){
+	 public void run(){
 		 	numThreads[0]++;
 			if((hi-low) < SEQUENTIAL_CUTOFF) {
 					classifyAll();												// classifying clouds sequentially
-					return prevailingWind();							// calculating prevailing wind sequentially
+					prevailingWind();							// calculating prevailing wind sequentially
 			}
 			else{
-				SumLocal left = new SumLocal(dimx, dimy, advection, convection, classification,low,(hi+low)/2,SEQUENTIAL_CUTOFF, numThreads);
-				SumLocal right = new SumLocal(dimx, dimy, advection, convection, classification,(hi+low)/2,hi,SEQUENTIAL_CUTOFF,numThreads);
+				SumLocal left = new SumLocalJavaThread(dimx, dimy, advection, convection, classification,low,(hi+low)/2,SEQUENTIAL_CUTOFF, numThreads,prevailingWindArr);
+				SumLocal right = new SumLocalJavaThread(dimx, dimy, advection, convection, classification,(hi+low)/2,hi,SEQUENTIAL_CUTOFF,numThreads,prevailingWindArr);
 				left.fork();
-				Float[] rightAns = right.compute();
-				Float[] leftAns  = left.join();
-				Float[] ans = new Float[2];							// storing the sum of the x- and y- component of advection for the prevailing wind calculation
-				ans[0] = rightAns[0] + leftAns[0];
-				ans[1] = rightAns[1] + leftAns[1];
-				return ans;
-			}
+				Float[] rightAns = right.run();
+				Float[] leftAns  = left.start();
 	 }
 
 	 // Method to sum the x- and y- components of advection
@@ -66,7 +61,6 @@ public class SumLocal extends RecursiveTask<Float[]>  {
 				 prevailingWindArr[0] += advection[t][x][y].get(0);
 				 prevailingWindArr[1] += advection[t][x][y].get(1);
 			}
-			return prevailingWindArr;
 	 }
 
 
