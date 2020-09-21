@@ -18,8 +18,8 @@ For more details on the implementation and results, see *Report.pdf*
 
 2. Do not call "make run" because it does not allow you to pass command-line arguments in. Rather run the program by calling "java CloudDataThreaded \<input_file> \<output_file>" from the bin directory. You will then see the run times for all of the tests in the terminal.
 
-	* \<input_file> - The data related to the cloud classifications and prevailing winds
-	* \<output_file> - The true cloud classifications and prevailing winds
+	* \<input_file> - The data related to the cloud classifications and prevailing winds. See "simplesample_input.txt" for an example.
+	* \<output_file> - The true cloud classifications and prevailing winds. See "simplesample_output.txt" for an example.
 
 3. Ensure the input file is in the bin directory.
 
